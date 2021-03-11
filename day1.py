@@ -16,3 +16,5 @@ with open(sys.argv[1]) as f:
 
     for key, val in trios.items():
         print(key, ":", val)
+
+        
