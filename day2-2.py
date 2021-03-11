@@ -23,3 +23,4 @@ for line in lines:
         validcount += 1
 
 print(validcount)
+
