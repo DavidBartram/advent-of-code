@@ -4,12 +4,9 @@ def findsize(subject, transformed):
     while i < 100000000:
         #python's built-in pow function calculates modular exponentiation
         if pow(subject, i, 20201227) == transformed:
-            print(i)
             return i
-            break
         else:
             i += 1
-            print(i)
 
 subject = 7  #initial value, fixed in the puzzle rules
 card_key = 5764801 #card's public key from puzzle input
