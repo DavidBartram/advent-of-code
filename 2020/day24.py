@@ -11,7 +11,7 @@ def parse_line(string):
             string = string[1:]
         
         if string[0] in {'n','s'}:
-            #north and south don't exist on the hex grid, only ne,nw,se,sw
+            #north and south don't exist on this hex grid, only ne,nw,se,sw
             #so take two characters
             cmds.append(string[0:2])
             string = string[2:]
