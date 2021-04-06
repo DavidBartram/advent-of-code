@@ -57,7 +57,7 @@ def play(deck_p1, deck_p2):
         if len1 == 0: #if P1's deck is empty, P2 wins
             return 'P2', deck_p1, deck_p2
 
-        elif len2 == 0: #if P2's deck is empty, P2 wins
+        elif len2 == 0: #if P2's deck is empty, P1 wins
             return 'P1', deck_p1, deck_p2
         
         elif len1 - 1 < card1 or len2 - 1 < card2:
