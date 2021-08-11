@@ -16,4 +16,3 @@ loopsize = findsize(subject,card_key)
 door_key = 17807724 #door's public key from puzzle input
 
 print(pow(door_key, loopsize, 20201227))
-    
