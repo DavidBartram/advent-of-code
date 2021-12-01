@@ -4,9 +4,7 @@ import sys
 with open(sys.argv[1]) as f:
     depths = [int(l.rstrip('\n')) for l in f]
 
-#non-pythonic way with indexing
-count = 0
-
+#calculate sums of windows of 3 depths each
 sums = []
 
 window_size = 3
