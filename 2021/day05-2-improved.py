@@ -25,13 +25,6 @@ for pair in end_points:
         
         dx,dy = 0,1
 
-    elif start[1] == end[1]:
-
-        if start[0] > end[0]:
-            start,end = end,start
-        
-        dx,dy = 1,0
-
     else:
         if start[0] > end[0]:
             start,end = end,start
