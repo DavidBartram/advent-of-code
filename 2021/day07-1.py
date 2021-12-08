@@ -1,5 +1,4 @@
 import sys
-from statistics import median
 
 with open(sys.argv[1]) as file:
     data = file.read().split(',')
