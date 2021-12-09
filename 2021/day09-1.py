@@ -4,6 +4,9 @@ from collections import defaultdict
 with open(sys.argv[1]) as file:
     data = file.read().splitlines()
 
+# Since all the grid heights are between 0 and 9, 100 is a suitable default value
+# When the grid dictionary is asked to look up coords beyond the grid, it will return 100
+# this ensures that coords beyond the grid will result in a value lower than coords within the grid
 grid = defaultdict(lambda: 100)
 
 for j, row in enumerate(data):
