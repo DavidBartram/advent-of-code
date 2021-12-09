@@ -1,7 +1,8 @@
 import sys
-from collections import defaultdict
+from collections import defaultdict, Counter
 from functools import reduce
 import operator
+from random import randint
 
 with open(sys.argv[1]) as file:
     data = file.read().splitlines()
@@ -12,16 +13,8 @@ for j, row in enumerate(data):
     for i, item in enumerate(row):
         grid[(i,j)] = int(item)
 
-def neighbours(i,j,grid):
-    neigh_list = []
-
-    steps = [(1,0),(-1,0),(0,1),(0,-1)]
-    
-    for step in steps:
-        (dx,dy) = step
-        neigh_list.append(grid[(i+dx,j+dy)])
-    
-    return neigh_list
+rows = len(data)
+cols = len(data[0])
 
 def neighbour_coords(i,j,grid):
     coords_list = []
@@ -65,8 +58,8 @@ def get_basin_ID(i,j,grid,basin_IDs):
 
 def find_basins(grid):
     basin_IDs = defaultdict(lambda: -2)
-    for j, row in enumerate(data):
-        for i, _ in enumerate(row):
+    for j in range(rows):
+        for i in range(cols):
             #print('grid coords ', (i,j))
             basin_IDs[(i,j)] = get_basin_ID(i,j,grid,basin_IDs)
 
@@ -74,13 +67,9 @@ def find_basins(grid):
     
 
 def three_largest_basins(basin_IDs):
-    counts = defaultdict(lambda: 0)
-    for value in basin_IDs.values():
-        if value >= 0:
-            counts[value] += 1
-    
-    counts_list = list(counts.values())
-    counts_list.sort(reverse=True)
+    counts = Counter([x for x in basin_IDs.values() if x >=0])
+
+    counts_list = sorted(list(counts.values()), reverse=True)
 
     return reduce(operator.mul,counts_list[:3],1)
 
