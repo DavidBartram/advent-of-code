@@ -16,21 +16,14 @@ def get_rating(nums, i, co2):
             return nums[0]
         
         else:
-            filtered = []
-            comparator = '0'
-            if co2:
-                comparator = '1'
             ones = count_ones(nums,i)
-            if ones >= ceil(len(nums)/2):
-                comparator = '1'
-                if co2:
-                    comparator = '0'
-
-            for num in nums:
-                if num[i] == comparator:
-                    filtered.append(num)
             
-            nums = filtered
+            comparator = '0'
+
+            if (co2==True and ones < ceil(len(nums)/2)) or (co2==False and ones >= ceil(len(nums)/2)) :
+                comparator = '1'
+
+            nums = [num for num in nums if num[i]==comparator]
 
             return get_rating(nums,i+1,co2)
 
