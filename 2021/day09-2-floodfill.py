@@ -27,7 +27,7 @@ def neighbours(i,j,grid):
     return neigh_list
 
 def neighbour_coords(i,j,grid):
-#returns a list of coords of points adjacent to (i,j) in the grid
+    #returns a list of coords of points adjacent to (i,j) in the grid
     coords_list = []
     steps = [(1,0),(-1,0),(0,1),(0,-1)]
         
@@ -47,43 +47,43 @@ def find_low_points(grid):
 
     return low_points
 
-def flood_fill(point,grid,k):
-    #starting with a point (x,y) that is in a basin
-    #replace all height values in the same basin with k
+def flood_fill_and_count(point,grid):
+    #starting with a point (x,y) that is in a basin (e.g. the low point)
+    #count all the points in that basin
     #note that every basin is entirely surrounded by points with height 9
+
+    count = 0
 
     if grid[point] == 9:
         #stop if you've reached the edge of the basin
-        return
-    
-    elif grid[point] == k:
-        return
-    
+        #or a point that's already been counted (see below)
+        return count
+        
     else:
-        grid[point] = k
+        count += 1 #count this point
+        grid[point] = 9 #flood fill with 9s, prevents counting this point again
 
-        #recursively fill the neighbouring points
+        #recursively count the neighbouring points
         for nb in neighbour_coords(point[0], point[1], grid):
-            flood_fill(nb,grid,k)
+            count += flood_fill_and_count(nb,grid)
+    
+    return count
 
-def three_largest_basins(grid):
-    #we should only count points that are labelled as part of a basin
-    #make sure we don't count high points grid[high point] == 9
-    #also make sure we don't count points outside the grid grid[outside point] == 10
-    counts = Counter([x for x in grid.values() if x>10])
+def find_basin_sizes(low_points, grid):
+    basin_sizes = []
+    for lp in low_points:
+        basin_sizes.append(flood_fill_and_count(lp,grid))
 
-    counts_list = sorted(list(counts.values()), reverse=True)
+    return basin_sizes
 
-    return reduce(operator.mul,counts_list[:3],1)
+def solve_puzzle(grid):
+    lps = find_low_points(grid)
 
-lps = find_low_points(grid)
+    basin_sizes = find_basin_sizes(lps, grid)
 
-#replace all heights of basin points with a distinct label for the basin
-#use i+20 as the basin label, to ensure it is distinct from all original height values and the default value 10
-for i, lp in enumerate(lps):
-    flood_fill(lp,grid,(i+20))
+    return reduce(operator.mul,sorted(basin_sizes, reverse=True)[:3],1)
 
-print(three_largest_basins(grid))
+print(solve_puzzle(grid))
 
 
 
