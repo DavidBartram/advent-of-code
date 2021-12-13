@@ -16,11 +16,11 @@ def dfs(graph, node, target, path, paths, revisits):
     
     if node in path and node.islower():
         revisits = False
-    
-    path.append(node)
+
+    newpath = path[:] + [node] #create a new copy of the path each time the function is called and append the current node
 
     if node == target:
-        paths.append(path[:])
+        paths.append(newpath[:])
 
     else:
         for neighbour in graph[node]:
@@ -31,9 +31,7 @@ def dfs(graph, node, target, path, paths, revisits):
                 valid_neighbour = not (neighbour in path and neighbour.islower())
 
             if valid_neighbour:
-                dfs(graph,neighbour,target,path, paths, revisits)
-
-    path.pop() #backtrack if target reached or no neighbours are valid
+                dfs(graph,neighbour,target,newpath, paths, revisits)
 
     return paths
 

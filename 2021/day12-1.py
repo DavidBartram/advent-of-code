@@ -1,5 +1,6 @@
 import sys
 from collections import defaultdict
+from random import sample
 
 with open(sys.argv[1]) as file:
     data = file.read().splitlines()
@@ -11,19 +12,19 @@ for line in data:
     graph[line[0]].append(line[1])
     graph[line[1]].append(line[0])
 
+graph = {key:sample(value, len(value)) for key,value in graph.items()}
+
 
 def dfs(graph, node, target, path, paths):
-    path.append(node)
+    newpath = path[:] + [node] #create a new copy of the path each time the function is called and append the current node
 
     if node == target:
-        paths.append(path[:])
+        paths.append(newpath[:])
 
     else:
         for neighbour in graph[node]:
-            if not (neighbour in path and neighbour.islower()):
-                dfs(graph,neighbour,target,path, paths)
-
-    path.pop() #backtrack if target reached or no neighbours are valid
+            if not (neighbour in newpath and neighbour.islower()):
+                dfs(graph,neighbour,target,newpath, paths)
 
     return paths
 
