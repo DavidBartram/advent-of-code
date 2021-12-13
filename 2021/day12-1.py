@@ -16,7 +16,7 @@ def dfs(graph, node, target, path, paths):
     path.append(node)
 
     if node == target:
-        paths.append(path)
+        paths.append(path[:])
 
     else:
         for neighbour in graph[node]:
@@ -25,8 +25,8 @@ def dfs(graph, node, target, path, paths):
 
     path.pop() #backtrack if target reached or no neighbours are valid
 
-    return len(paths)
+    return paths
 
-print(dfs(graph,'start','end',[],[]))
+print(len(dfs(graph,'start','end',[],[])))
 
 
