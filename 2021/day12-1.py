@@ -13,15 +13,20 @@ for line in data:
 
 
 def dfs(graph, node, target, path, paths):
-    newpath = path[:] + [node] #create a new copy of the path each time the function is called and append the current node
+    path.append(node)
 
     if node == target:
-        paths.append(newpath[:])
+        paths.append(path[:]) #append a copy of the current path, not a pointer to the path variable which keeps changing
 
     else:
         for neighbour in graph[node]:
-            if not (neighbour in newpath and neighbour.islower()):
-                dfs(graph,neighbour,target,newpath, paths)
+            if not (neighbour in path and neighbour.islower()):
+                dfs(graph,neighbour,target,path, paths)
+
+    #we are using the same path variable for all the recursive calls
+    #when a function call completes, we want to leave path the way we found it
+    #so remove the node we appended above
+    path.pop()
 
     return paths
 
