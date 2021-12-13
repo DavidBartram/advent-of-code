@@ -1,6 +1,5 @@
 import sys
 from collections import defaultdict
-from random import sample
 
 with open(sys.argv[1]) as file:
     data = file.read().splitlines()
@@ -11,8 +10,6 @@ for line in data:
     line = line.split('-')
     graph[line[0]].append(line[1])
     graph[line[1]].append(line[0])
-
-graph = {key:sample(value, len(value)) for key,value in graph.items()}
 
 
 def dfs(graph, node, target, path, paths):
