@@ -7,20 +7,12 @@ with open(sys.argv[1]) as file:
 
     grids = [x.split('\n') for x in data[1:]]
 
-    newgrids = []
+    grids = [[x.strip().replace('  ', ' ').split(' ') for x in grid] for grid in grids]
 
-    for grid in grids:
-        stripped_grid = [x.strip() for x in grid]
-        newgrids.append([x.replace('  ', ' ').split(' ') for x in stripped_grid])
-        
-    
-    grids = newgrids
+    grids[-1].remove(['']) #remove unwanted element created at end of file
 
-    grids[-1].remove([''])
-
-    transposed_grids = []
-    for grid in grids:
-        transposed_grids.append(list(map(list, zip(*grid))))
+    #append columns to each grid as if they were additional rows
+    grids = [grid + [[row[i] for row in grid] for i in range(len(grid))] for grid in grids] 
 
 def check(card,nums):
     for row in card:
@@ -28,22 +20,22 @@ def check(card,nums):
             return True
 
 def score(card,nums):
-    flat_card = set([val for row in card for val in row])
-    scores = flat_card - set(nums)
-    scores = [int(score) for score in scores]
-    return sum(scores)
+    nums_on_card = set([val for row in card[:5] for val in row])
+    scores = nums_on_card - set(nums)
+    total = sum([int(score) for score in scores])
+    return total
 
-def play(cards,transposed_cards, nums):
+def play(cards,nums):
 
     nums_so_far = []
 
     for num in nums:
         nums_so_far.append(num)
-        for i in range(len(cards)):
-            if check(cards[i],nums_so_far) == True or check(transposed_cards[i],nums_so_far) == True :
-                return score(cards[i],nums_so_far)*int(num)
+        for card in cards:
+            if check(card,nums_so_far) == True:
+                return score(card,nums_so_far)*int(num)
 
-print(play(grids,transposed_grids,win_nums))
+print(play(grids,win_nums))
 
 
 

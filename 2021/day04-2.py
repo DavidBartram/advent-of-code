@@ -7,20 +7,12 @@ with open(sys.argv[1]) as file:
 
     grids = [x.split('\n') for x in data[1:]]
 
-    newgrids = []
-
-    for grid in grids:
-        stripped_grid = [x.strip() for x in grid]
-        newgrids.append([x.replace('  ', ' ').split(' ') for x in stripped_grid])
-        
-    
-    grids = newgrids
+    grids = [[x.strip().replace('  ', ' ').split(' ') for x in grid] for grid in grids]
 
     grids[-1].remove([''])
 
-    transposed_grids = []
-    for grid in grids:
-        transposed_grids.append(list(map(list, zip(*grid))))
+#append columns to each grid as if they were additional rows
+grids = [grid + [[row[i] for row in grid] for i in range(len(grid))] for grid in grids] 
 
 def check(card,nums):
     for row in card:
@@ -28,31 +20,34 @@ def check(card,nums):
             return True
 
 def score(card,nums):
-    flat_card = set([val for row in card for val in row])
-    scores = flat_card - set(nums)
-    scores = [int(score) for score in scores]
-    return sum(scores)
+    nums_on_card = set([val for row in card for val in row])
+    scores = nums_on_card - set(nums)
+    total = sum([int(score) for score in scores])
+    return total
 
-def part2_play(cards,transposed_cards, nums):
+def part2_play(cards,nums):
 
     nums_so_far = []
+
+    #list of indices of cards still in play
+    # e.g. if cards[3] is still in play, then 3 will be in remaining_cards
     remaining_cards = list(range(len(cards)))
 
     for num in nums:
-
         nums_so_far.append(num)
+
         for i in remaining_cards:
-            if check(cards[i],nums_so_far) == True or check(transposed_cards[i],nums_so_far) == True :
-                if i in remaining_cards:
-                    remaining_cards.remove(i)
+            
+            if check(cards[i],nums_so_far) == True:
+                remaining_cards.remove(i)
 
-                    if len(remaining_cards) ==0:
-                        final_card = cards[i]
-                        return score(final_card,nums_so_far)*int(num)                
+                if len(remaining_cards) ==0:
+                    final_card = cards[i]
+                    return score(final_card,nums_so_far)*int(num)                
         
 
         
 
 
-print(part2_play(grids,transposed_grids,win_nums))
+print(part2_play(grids,win_nums))
 
