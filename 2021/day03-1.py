@@ -4,24 +4,14 @@ from math import ceil
 with open(sys.argv[1]) as file:
     values = file.read().splitlines()
 
-length = len(values[0])
+length = len(values[0]) #length of each binary number
 
-ones = [0]*length
+ones = [sum([value[i]=='1' for value in values]) for i in range(length)] #number of ones in each column as a list
 
-for value in values:
-    for i in range(length):
-        if value[i] == '1':
-            ones[i] += 1
+threshold = ceil(len(values)/2) 
 
-gamma=''
-epsilon=''
+gamma = int(''.join(['1' if x>threshold else '0' for x in ones]), base=2)
 
-for x in ones:
-    if x > ceil(len(values)/2):
-        gamma += '1'
-        epsilon += '0'
-    else:
-        gamma += '0'
-        epsilon += '1'
+epsilon = 2**length - 1 - gamma #subtracting from 2^(length) - 1 is equivalent to flipping all bits in the binary representation
 
-print(int(gamma,2)*int(epsilon,2))
+print(gamma*epsilon)
