@@ -33,7 +33,8 @@ class Message:
             go = 1
             while go == 1:
                 go = self.integer_value(1)
-                val += "{:08b}".format(self.integer_value(4))
+                val += "{:04b}".format(self.integer_value(4))
+                #print(val)
 
             return int(val,2)
 
