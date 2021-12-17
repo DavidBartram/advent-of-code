@@ -6,7 +6,7 @@ import math
 class Message:
     def __init__(self, file):
         hex_data = file.read().strip()
-        print(hex_data)
+        #print(hex_data)
 
         bin_data = binascii.a2b_hex(hex_data)
         #bin_data = bytes.fromhex(hex_data)
@@ -130,7 +130,7 @@ with open(sys.argv[1]) as file:
 
 packet = message.parse_one_packet()
 
-print(packet)
+#print(packet)
 
 print(apply_operators(packet))
 
