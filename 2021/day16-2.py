@@ -1,5 +1,6 @@
 import sys
 import binascii
+import math
 
 
 class Message:
@@ -84,16 +85,16 @@ def apply_operators(packet):
         return total
 
     if id == 2:
-        total = apply_operators(data[0])
-        for subpacket in data[1:]:
+        total = math.inf
+        for subpacket in data:
             val = apply_operators(subpacket)
             if val<total:
                 total = val
         return total
 
     if id == 3:
-        total = apply_operators(data[0])
-        for subpacket in data[1:]:
+        total = -math.inf
+        for subpacket in data:
             val = apply_operators(subpacket)
             if val>total:
                 total = val
@@ -110,9 +111,9 @@ def apply_operators(packet):
         return total
     
     if id==6:
-        total = 1
-        if apply_operators(data[0]) > apply_operators(data[1]):
-            total = 0
+        total = 0
+        if apply_operators(data[0]) < apply_operators(data[1]):
+            total = 1
         return total
 
     if id==7:
