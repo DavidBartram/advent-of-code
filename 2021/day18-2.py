@@ -1,7 +1,6 @@
 from math import ceil, floor
 import sys
 from functools import reduce
-from itertools import permutations
 
 def read(snail_string): #assume no values above 9 in input
     snail = []
@@ -50,12 +49,11 @@ def split(snail):
     return False
 
 def add(snail1, snail2):
-    snail1.extend(snail2)
-    
+    res = snail1 + snail2
 
-    snail1 = [(val,depth+1) for (val,depth) in snail1]
+    res= [(val,depth+1) for (val,depth) in res]
 
-    return snail1
+    return res
 
 def snail_reduce(snail):
     while explode(snail) or split(snail):
@@ -87,62 +85,35 @@ def magnitude(snail):
 
     i = 0
 
-    while i <= len(snail)-1:
-        #print('max_depth',max_depth)
-        #print('i',i)
-        #print(snail)
+    while i <= len(snail)-2:
         if snail[i][1]==max_depth:
-            if i+1 <= len(snail) - 1:
-                snail[i] = (3*snail[i][0] + 2*snail[i+1][0],max_depth-1)
-                snail.pop(i+1)
-            else: snail[i] = (snail[i][0],max_depth-1)
+            snail[i] = (3*snail[i][0] + 2*snail[i+1][0],max_depth-1)
+            snail.pop(i+1)
             i += 1
         else:
             i +=1 
 
     return magnitude(snail)
 
-#snail1 = read('[[[[4,3],4],4],[7,[[8,4],9]]]')
-
-#snail2 = read('[1,1]')
-
-#snail = add_and_snail_reduce(snail1,snail2)
-
-#snail1 = read('[[[[4,3],4],4],[7,[[8,4],9]]]')
-
-#snail2 = read('[1,1]')
-
-#snail = add_and_snail_reduce(snail1,snail2)
-
-#print(snail)
-
-with open(sys.argv[1]) as file:
-    snails = [read(line.strip()) for line in file]
-
-
-#print(magnitude(reduce(add_and_snail_reduce, snails)))
+def part_one(snails):
+    return magnitude(reduce(add_and_snail_reduce,snails))
 
 
 def part_two(snails):
-    max_mag = 0
+    mags = []
     for i in range(len(snails)):
         for j in range(len(snails)):
-            print(i,j)
             if i==j:
                 continue
-            else:
-                res = magnitude(add_and_snail_reduce(snails[i],snails[j]))
-                if res > max_mag:
-                    max_mag = res
-                res = magnitude(add_and_snail_reduce(snails[j],snails[i]))
-                if res > max_mag:
-                    max_mag = res
-                print(max_mag)
 
-    return max_mag
+            mag1 = magnitude(add_and_snail_reduce(snails[i],snails[j]))
+            mag2 = magnitude(add_and_snail_reduce(snails[j],snails[i]))
+            mags += [mag1,mag2]
 
-#snail = read('[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]')
+    return max(mags)
 
+with open(sys.argv[1]) as file:
+    snails = [read(line.strip()) for line in file]   
+
+print(part_one(snails))
 print(part_two(snails))
-    
-

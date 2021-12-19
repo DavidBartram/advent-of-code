@@ -49,12 +49,11 @@ def split(snail):
     return False
 
 def add(snail1, snail2):
-    snail1.extend(snail2)
-    
+    res = snail1 + snail2
 
-    snail1 = [(val,depth+1) for (val,depth) in snail1]
+    res= [(val,depth+1) for (val,depth) in res]
 
-    return snail1
+    return res
 
 def snail_reduce(snail):
     while explode(snail) or split(snail):
@@ -87,9 +86,6 @@ def magnitude(snail):
     i = 0
 
     while i <= len(snail)-2:
-        #print('max_depth',max_depth)
-        #print('i',i)
-        #print(snail)
         if snail[i][1]==max_depth:
             snail[i] = (3*snail[i][0] + 2*snail[i+1][0],max_depth-1)
             snail.pop(i+1)
@@ -99,52 +95,10 @@ def magnitude(snail):
 
     return magnitude(snail)
 
-#snail1 = read('[[[[4,3],4],4],[7,[[8,4],9]]]')
-
-#snail2 = read('[1,1]')
-
-#snail = add_and_snail_reduce(snail1,snail2)
-
-#snail1 = read('[[[5,[2,8]],4],[5,[[9,9],0]]]')
-
-#snail2 = read('[[[0,[5,8]],[[1,7],[9,6]]],[[4,[1,2]],[[1,4],2]]]')
-
-#snail = add_and_snail_reduce(snail1,snail2)
-
-#print('1st mag',magnitude(snail))
+def part_one(snails):
+    return magnitude(reduce(add_and_snail_reduce,snails))
 
 with open(sys.argv[1]) as file:
-    raw = [line.strip() for line in file]
-    snails = [read(line.strip()) for line in file]
+    snails = [read(line.strip()) for line in file]  
 
-#print(magnitude(reduce(add_and_snail_reduce, snails)))
-
-#snail = read('[[[[7,8],[6,6]],[[6,0],[7,7]]],[[[7,8],[8,8]],[[7,9],[0,6]]]]')
-
-#print(magnitude(snail))
-    
-def part_two(raw):
-    maglist =[]
-    for i in range(len(raw)):
-        for j in range(len(raw)):
-            #print(i,j)
-            snail1 = read(raw[i])
-
-            snail2 = read(raw[j])
-
-            snail = add_and_snail_reduce(snail1,snail2)
-
-            maglist.append(magnitude(snail))
-
-            snail1 = read(raw[j])
-
-            snail2 = read(raw[i])
-
-            snail = add_and_snail_reduce(snail1,snail2)
-
-            maglist.append(magnitude(snail))
-
-    return max(maglist)
-
-            
-print(part_two(raw))
+print(part_one(snails))
