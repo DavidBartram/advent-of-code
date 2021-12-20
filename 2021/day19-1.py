@@ -1,4 +1,4 @@
-from itertools import permutations, product
+from itertools import permutations
 import sys
 
 def initialise():
@@ -20,112 +20,92 @@ def initialise():
 
     scanners.append(scanner)
 
-    return scanners
+    scanners = [set(scanner) for scanner in scanners]
 
-scanners = initialise()
+    perms = set(permutations((0,1,2)))
 
+    sigs = {(1,1,1), (-1,-1,1), (-1,1,-1), (1,-1,-1)}
 
-def rotations(point):
+    return scanners, perms, sigs
 
-    (x,y,z) = point
+scanners, perms, sigs = initialise()
 
-    perm = permutations(point)
+def reorient(scanner,perm,sig):
+    newscanner = set()
 
-    rots = []
+    for beacon in scanner:
+        newbeacon = (beacon[perm[0]]*sig[0], beacon[perm[1]]*sig[1], beacon[perm[2]]*sig[2])
+        newscanner.add(newbeacon)
 
-    for coord in perm:
-        (x,y,z) = coord
-        
-        rots += [(x,y,z), (-x,-y,z), (x,-y,-z),(-x,y,-z)]
+    return newscanner
 
-    return rots
+def translate(scanner,offset):
+    newscanner = set()
+    dx,dy,dz = offset
 
-def do_beacons_match(beacon1a, beacon2a,beacon1b,beacon2b):
-    (x1a,y1a,z1a) = beacon1a
-    (x2a,y2a,z2a) = beacon2a
-    (x1b,y1b,z1b) = beacon1b
-    (x2b,y2b,z2b) = beacon2b
+    for beacon in scanner:
+        x,y,z = beacon
+        newbeacon = (x+dx,y+dy,z+dz)
+        newscanner.add(newbeacon)
 
-    if (abs(x2a-x1a), abs(y2a-y1a), abs(z2a-z1a)) == (abs(x2b-x1b), abs(y2b-y1b), abs(z2b-z1b)):
+    return newscanner
+
+def match12(scannerA, scannerB):
+    common_points = scannerA.intersection(scannerB)
+
+    if len(common_points) >= 12:
         return True
     
-    else:
-        return False
+    return False
 
-def matched_beacons(scannerA,scannerB):
-    A_matches = set()
-    B_matches = set()
-    possible_offsets = set()
-    for beacon1a in scannerA:
-        for beacon2a in scannerA:
-            if beacon1a == beacon2a:
-                continue
-        for beacon1b in scannerB:
-            for beacon2b in scannerB:
-                if beacon1b == beacon2b:
+def compare(scannerA,scannerB):
+    for perm in perms:
+        for sig in sigs:
+            rotB = reorient(scannerB,perm,sig)
+            for beaconA in scannerA:
+                for beaconB in rotB:
+                    xa,ya,za = beaconA
+                    xb,yb,zb = beaconB
+                    offset = (xa-xb,ya-yb,za-zb)
+                    transB = translate(rotB,offset)
+                    
+                    if match12(scannerA,transB):
+                        return offset, perm, sig
+
+                    offset = (xb-xa,yb-ya,zb-za)
+                    transB = translate(rotB,offset)
+
+                    if match12(scannerA,transB):
+                        return offset, perm, sig
+
+
+
+def part_one(scanners):
+
+    visited = [0]
+    base_scanner = scanners[0]
+
+    while len(visited) < len(scanners):
+        for i,scanner in enumerate(scanners):
+                if i in visited:
                     continue
-                #print(beacon1a, beacon2a, beacon1b, beacon2b)
-                #print(do_beacons_match(beacon1a, beacon2a, beacon1b, beacon2b))
-                if do_beacons_match(beacon1a, beacon2a, beacon1b, beacon2b):
-                    A_matches = A_matches | {beacon1a,beacon2a}
-                    B_matches = B_matches | {beacon1b,beacon2b}
-                    
-                    for rot1b in rotations(beacon1b):
-                        for rot2b in rotations(beacon2b):
-                            possible_offsets = possible_offsets | {tuple(p-q for p,q in zip(beacon1a,rot1b))}
-                            possible_offsets = possible_offsets | {tuple(p-q for p,q in zip(beacon1a,rot2b))}
-                    
-    
-    return A_matches, B_matches, possible_offsets
 
-def find_correct_offset(matchesA, matchesB, possible_offsets):
-    megamatchA = []
-    for i in range(24):
-        coords = set()
-        for beacon in matchesA:
-            coords = coords | {beacon}
-        megamatchA.append(coords)
+                print('checking', i)
 
-    for offset in possible_offsets:
-        for i in range(24):
-            coords = set()
-            for beacon in matchesB:
-                coords = coords | {tuple(p+q for p,q, in zip(rotations(beacon)[i], offset))}
+                result = compare(base_scanner, scanner)
             
-            if coords in megamatchA:
-                return offset, i
+                if result:
+                    print('match!')
+                    print(result)
+                    offset, perm, sig = result
+                    new_scanner = reorient(scanner,perm,sig)
+                    new_scanner = translate(new_scanner,offset)
+                    visited.append(i)
+                    base_scanner = base_scanner | new_scanner
+                    print(len(base_scanner))
+                
+    return len(base_scanner)
 
-
-def reorient_scanner(scanner, offset, i):
-    new_scanner = []
-    for beacon in scanner:
-        (x,y,z) = rotations(beacon)[i]
-        (dx,dy,dz) = offset
-        new_scanner.append((x+dx,y+dy,z+dz))
-    
-    return new_scanner
-
-        
-
-a = scanners[0]
-b = scanners[1]
-
-#print(A)
-#print(B)
-
-matchesA, matchesB, possible_offsets = matched_beacons(a,b)
-
-offset, orientation = find_correct_offset(matchesA, matchesB, possible_offsets)
-
-a = scanners[4]
-b = reorient_scanner(b, offset, orientation)
-
-matchesA, matchesB, possible_offsets = matched_beacons(a,b)
-
-print(matched_beacons(a,b))
-
-offset, orientation = find_correct_offset(matchesA, matchesB, possible_offsets)
-
-print(offset, orientation)
+print(part_one(scanners))
 
 
