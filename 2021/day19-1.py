@@ -24,11 +24,22 @@ def initialise():
 
     perms = set(permutations((0,1,2)))
 
-    sigs = {(1,1,1), (-1,-1,1), (-1,1,-1), (1,-1,-1)}
+    #odd_sigs = {(-1,1,1), (1,-1,1),(1,1,-1),(-1,-1,-1)}
 
-    return scanners, perms, sigs
+    #even_sigs = {(1,1,1), (-1,-1,1), (-1,1,-1), (1,-1,-1)}
 
-scanners, perms, sigs = initialise()
+    return scanners, perms
+
+scanners, perms = initialise()
+
+def parity(perm):
+    parity = sum(1 for (x,px) in enumerate(perm) for (y,py) in enumerate(perm) if x<y and px>py)%2
+
+    if parity == 0:
+        return {(1,1,1), (-1,-1,1), (-1,1,-1), (1,-1,-1)}
+
+    if parity == 1:
+        return {(-1,1,1), (1,-1,1),(1,1,-1),(-1,-1,-1)}
 
 def reorient(scanner,perm,sig):
     newscanner = set()
@@ -60,7 +71,7 @@ def match12(scannerA, scannerB):
 
 def compare(scannerA,scannerB):
     for perm in perms:
-        for sig in sigs:
+        for sig in parity(perm):
             rotB = reorient(scannerB,perm,sig)
             for beaconA in scannerA:
                 for beaconB in rotB:
@@ -90,19 +101,19 @@ def part_one(scanners):
                 if i in visited:
                     continue
 
-                print('checking', i)
+                #print('checking', i)
 
                 result = compare(base_scanner, scanner)
             
                 if result:
                     print('match!')
-                    print(result)
+                    print(i,result)
                     offset, perm, sig = result
                     new_scanner = reorient(scanner,perm,sig)
                     new_scanner = translate(new_scanner,offset)
                     visited.append(i)
                     base_scanner = base_scanner | new_scanner
-                    print(len(base_scanner))
+                    #print(len(base_scanner))
                 
     return len(base_scanner)
 
