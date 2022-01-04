@@ -45,33 +45,26 @@ def decode(signal):
         if overlap_with_7 == 3:
             decoder[y] = '3'
         
-        elif overlap_with_4 == 2:
-            decoder[y] = '2'
-        
         elif overlap_with_4 == 3:
             decoder[y] = '5'
         
         else:
-            print('rule for 5 segment digits not working! aaargh!')
+            decoder[y] = '2'
 
     for z in segs[6]:
-        overlap_with_1 = len(z.intersection(segs[2][0]))
+        overlap_with_7 = len(z.intersection(segs[3][0]))
 
         overlap_with_4 = len(z.intersection(segs[4][0]))
 
-        if overlap_with_1 == 1:
+        if overlap_with_7 == 2:
             decoder[z] = '6'
-            
-        elif overlap_with_4 == 3:
-            decoder[z] = '0'
             
         elif overlap_with_4 == 4:
             decoder[z] = '9'
             
         else:
-            print('rule for 6 segment digits not working! aaargh!')
-            
-
+            decoder[z] = '0'
+        
     
     return decoder
 
