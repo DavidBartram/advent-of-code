@@ -7,7 +7,8 @@ with open(sys.argv[1]) as file:
 def sum_fuel_costs(positions, x):
     sum = 0
     for position in positions:
-        sum += 0.5*((position-x)**2 + abs(position - x))
+        d = abs(position-x)
+        sum += 0.5*d*(d+1)
     
     return int(sum)
 
