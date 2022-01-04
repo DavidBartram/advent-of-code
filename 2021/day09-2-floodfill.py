@@ -8,7 +8,7 @@ with open(sys.argv[1]) as file:
 
 # Since all the grid heights are between 0 and 9, 10 is a suitable default value
 # When the grid dictionary is asked to look up coords beyond the grid, it will return 10
-# this ensures that coords beyond the grid will result in a value lower than coords within the grid
+# this ensures that coords beyond the grid will result in a value higher than coords within the grid
 grid = defaultdict(lambda: 10)
 
 for j, row in enumerate(data):
