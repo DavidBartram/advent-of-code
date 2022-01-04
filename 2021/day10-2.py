@@ -5,14 +5,14 @@ with open(sys.argv[1]) as file:
     data = file.read().splitlines()
 
 
-map = {')':'(', ']': '[', '}': '{','>':'<'}
+bracketmap = {')':'(', ']': '[', '}': '{','>':'<'}
 
-invmap = {value:key for key,value in map.items()}
+invbracketmap = {value:key for key,value in bracketmap.items()}
 
-openers = set(map.values())
+openers = set(bracketmap.values())
 
 
-def correct(line):
+def completion_string(line):
     stack = []
 
     for char in line:
@@ -20,16 +20,16 @@ def correct(line):
             stack.append(char)
         
         else:
-            if stack[-1] == map[char]:
+            if stack[-1] == bracketmap[char]:
                 stack.pop()
             else:
                 return False
     
     stack.reverse()
 
-    stack = ''.join([invmap[x] for x in stack])
+    stack = ''.join([invbracketmap[x] for x in stack])
 
-    return score(stack)
+    return stack
 
 def score(string):
     scoremap = {')':1, ']':2, '}':3, '>':4}
@@ -40,10 +40,9 @@ def score(string):
     return score
 
 def solve_part_two(lines):
-    scores = [correct(line) for line in lines if correct(line)]
+    scores = [score(completion_string(line)) for line in lines if completion_string(line)]
     
     return(median(scores))
 
 
 print(solve_part_two(data))
-
