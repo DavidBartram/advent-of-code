@@ -44,8 +44,8 @@ def intersect(cuboid1,cuboid2):
 
 def new_cuboid(poscuboids,negcuboids,newcuboid, onoff):
 
-    newpos = poscuboids.copy()
-    newneg = negcuboids.copy()
+    newpos = []
+    newneg = []
 
     if onoff == 'on':
         newpos += [newcuboid]
@@ -60,7 +60,7 @@ def new_cuboid(poscuboids,negcuboids,newcuboid, onoff):
         if overlap:
             newpos += [overlap]
 
-    return newpos, newneg
+    return poscuboids+newpos, negcuboids+newneg
 
 def apply_instructions(instructions):
     poscuboids = []
@@ -69,6 +69,9 @@ def apply_instructions(instructions):
     i=0
 
     for instruction in instructions:
+        i += 1
+        if i%50 == 0:
+            print(i, len(poscuboids), len(negcuboids))
         onoff = instruction[0]
         newcuboid = instruction[1]
         poscuboids, negcuboids = new_cuboid(poscuboids,negcuboids,newcuboid,onoff)
