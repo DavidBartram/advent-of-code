@@ -66,8 +66,6 @@ def apply_instructions(instructions):
     poscuboids = []
     negcuboids = []
 
-    i=0
-
     for instruction in instructions:
         i += 1
         if i%50 == 0:
