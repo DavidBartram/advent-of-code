@@ -67,9 +67,6 @@ def apply_instructions(instructions):
     negcuboids = []
 
     for instruction in instructions:
-        i += 1
-        if i%50 == 0:
-            print(i, len(poscuboids), len(negcuboids))
         onoff = instruction[0]
         newcuboid = instruction[1]
         poscuboids, negcuboids = new_cuboid(poscuboids,negcuboids,newcuboid,onoff)
