@@ -1,5 +1,5 @@
 from collections import defaultdict
-from math import inf, floor, ceil
+from math import inf, ceil
 from queue import PriorityQueue
 from itertools import count
 
@@ -33,7 +33,7 @@ def is_final(hall,rooms):
 
 def hall_to_room(amphi,h,hall,rooms):
 
-    room_index = {0:1.5, 1:2.5, 2:3.5, 3:3.5}
+    room_index = {0:1.5, 1:2.5, 2:3.5, 3:4.5}
     j = room_index[amphi]
     k = int(ceil(j))
 
@@ -41,15 +41,17 @@ def hall_to_room(amphi,h,hall,rooms):
     newrooms = [list(room) for room in rooms]
 
     if h<j:
-        intervening_hall = hall[h:k]
+        intervening_hall = [obj!=None for obj in hall[h+1:k]]
 
     if h>j:
-        intervening_hall = hall[k:h]
+        intervening_hall = [obj!=None for obj in hall[k:h]]
+    
+    wrong_amphi = [(x!=amphi and x!=None) for x in rooms[amphi]]
 
-    if any(intervening_hall) or any([x!=amphi for x in rooms[amphi]]):
+    if any(intervening_hall) or any(wrong_amphi):
         return None
 
-    else:
+    if not (any(intervening_hall) or any(wrong_amphi)):
         r_pos = len(rooms[amphi]) - 1 - sum([x==amphi for x in rooms[amphi]])
         cost = move_cost(amphi,h,amphi,r_pos)
         newhall[h] = None
@@ -59,7 +61,7 @@ def hall_to_room(amphi,h,hall,rooms):
         return (newhall, newrooms, cost)
 
 def room_to_hall(r,h,amphi,hall,rooms, r_pos):
-    room_index = {0:1.5, 1:2.5, 2:3.5, 3:3.5}
+    room_index = {0:1.5, 1:2.5, 2:3.5, 3:4.5}
     j = room_index[r]
     k = int(ceil(j))
 
@@ -67,21 +69,21 @@ def room_to_hall(r,h,amphi,hall,rooms, r_pos):
     newrooms = [list(room) for room in rooms]
 
     if h<j:
-        intervening_hall = hall[h:k]
+        intervening_hall = [obj!=None for obj in hall[h:k]]
 
     if h>j:
-        intervening_hall = hall[k:h]
+        intervening_hall = [obj!=None for obj in hall[k:h+1]]
     
     if r_pos == 0:
         intervening_room = [None]
     
     if r_pos != 0:
-        intervening_room = rooms[r][0:r_pos]
+        intervening_room = [obj!=None for obj in rooms[r][0:r_pos]]
 
     if any(intervening_hall) or any(intervening_room):
         return None
     
-    else:
+    if not (any(intervening_hall) or any(intervening_room)):
         cost = move_cost(r,h,amphi,r_pos)
         newhall[h] = amphi
         newrooms[r][r_pos] = None
@@ -93,16 +95,15 @@ def neighbours(hall,rooms):
     neighbours = []
 
     for h,amphi in enumerate(hall):
-        if not amphi:
-            continue
-        result = hall_to_room(amphi,h,hall,rooms)
-        if result:
-            neighbours.append(result)
+        if amphi!=None:
+            result = hall_to_room(amphi,h,hall,rooms)
+            if result:
+                neighbours.append(result)
     
-    for h,amphi in enumerate(hall):
+    for h,_ in enumerate(hall):
         for r,room in enumerate(rooms):
             for r_pos, amphi in enumerate(room):
-                if amphi:
+                if amphi!=None:
                     result = room_to_hall(r,h,amphi,hall,rooms, r_pos)
                     if result:
                         #print(result)
@@ -111,15 +112,11 @@ def neighbours(hall,rooms):
     return neighbours
 
 def dijkstra(visit,costs):
-
-    final_hall = (None,None,None,None,None,None,None)
-    final_rooms = ((0,0),(1,1),(2,2),(3,3))
     
     while not visit.empty():
         (c,_,(hall,rooms)) = visit.get()
 
-        if c==9940:
-            print(c)
+        #print(c)
 
         if hall == final_hall and rooms == final_rooms:
             return c
@@ -136,8 +133,12 @@ def dijkstra(visit,costs):
 
 
 start_hall = (None,None,None,None,None,None,None)
+start_rooms = ((3,3),(2,2),(0,1),(1,0))
 
-start_rooms = ((1,0),(2,3),(1,2),(2,0))
+final_hall = (None,None,None,None,None,None,None)
+final_rooms = ((0,0),(1,1),(2,2),(3,3))
+
+
 start_costs = defaultdict(lambda : inf)
 start_costs[(start_hall,start_rooms)] = 0
 unique=count()
