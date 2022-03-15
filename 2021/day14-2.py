@@ -47,7 +47,7 @@ def apply_rules(rules, elements, pairs):
 
 def apply_rules_n_times(n, rules, elements,pairs):
 
-    for i in range(n):
+    for _ in range(n):
         elements, pairs = apply_rules(rules, elements, pairs)
 
     freqs = elements.values()
