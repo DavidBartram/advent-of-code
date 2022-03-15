@@ -1,5 +1,6 @@
 import sys
 
+#parse the input data to find the target area
 with open(sys.argv[1]) as file:
     data = file.read().strip()
 
@@ -9,8 +10,6 @@ x_min = int(data[0])
 x_max = int(data[1])
 y_min = int(data[2])
 y_max = int(data[3])
-
-print(data)
 
 def get_height(vx, vy):
     x=0
