@@ -8,6 +8,7 @@ with open(sys.argv[1]) as file:
 
 
 def initialise(data):
+    #set up the initial grid, before the enlargement
     grid = {}
 
     for j, row in enumerate(data):
@@ -38,6 +39,8 @@ def neighbour_coords(point,grid):
     return coords_list
 
 def get_node_value(point,grid):
+    #use modular arithmetic to get the value of a node at any point in the enlarged grid
+    #by referencing the initial grid (pre-enlargement)
     (x,y) = point
     x_len = len(data[0])
     y_len = len(data)
