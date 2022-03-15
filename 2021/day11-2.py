@@ -1,12 +1,9 @@
 import sys
-from collections import defaultdict, Counter
-from functools import reduce
-import operator
-from random import randint
 
 with open(sys.argv[1]) as file:
     data = file.read().splitlines()
 
+#initialise a dict from tuples (i,j) to energy level of the point at coords (i,j)
 grid = {}
 
 for j, row in enumerate(data):
@@ -29,9 +26,8 @@ def neighbour_coords(i,j,grid):
     return coords_list
 
 def nb_dict(grid):
+    #populates a dictionary from each point in the grid to a list of neighbouring points
     nbdict = {}
-
-    #print(nbdict)
 
     for point in grid.copy():
         nbdict[point] = neighbour_coords(point[0],point[1],grid)
@@ -39,9 +35,9 @@ def nb_dict(grid):
     return nbdict
 
 def flash(point,grid,flashed_points,nbdict):
+    #causes a point to flash, and recursively flashes any neighbours whose energy goes above 9
 
-    flashed_points.append(point)
-    #print(flashed_points)
+    flashed_points.append(point) #keep track of points which have already flashed
 
     nbs = nbdict[point]
 
@@ -49,12 +45,10 @@ def flash(point,grid,flashed_points,nbdict):
         grid[nb] += 1
     
     for nb in nbs:
-        if grid[nb]>9 and nb not in flashed_points:
-            #print('flash at point ', nb)
+        if grid[nb]>9 and nb not in flashed_points: #only flash points that have not flashed this iteration
             grid, flashed_points = flash(nb, grid, flashed_points, nbdict)
     
     return grid,flashed_points
- 
 
 def advance_step(grid, nbdict, flash_sum):
     for point in grid:
@@ -63,8 +57,7 @@ def advance_step(grid, nbdict, flash_sum):
     flashed_points = []
 
     for point in grid:
-        if grid[point] > 9 and point not in flashed_points:
-            #print('flash at point ', point)
+        if grid[point] > 9 and point not in flashed_points: #only flash points that have not flashed this iteration
             grid, flashed_points = flash(point,grid, flashed_points, nbdict)
 
     for point in flashed_points:
@@ -83,7 +76,7 @@ def advance_until_synched(grid):
         advance_step(grid, nbdict,flash_sum)
         i+=1
 
-        if max(grid.values()) == 0:
+        if max(grid.values()) == 0: #when all points flash
             return i
 
 print(advance_until_synched(grid))
