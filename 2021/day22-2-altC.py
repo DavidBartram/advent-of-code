@@ -5,6 +5,11 @@ from collections import defaultdict
 from statistics import median
 
 def initialise():
+    #read the input file
+    #output instructions, a list of tuples (op, (ix,iy,iz))
+    #op is either 'on' or 'off', representing the operation for that instruction
+    #ix, iy, iz are intervals defining the cuboid for that instruction
+
     with open(sys.argv[1]) as file:
         data = file.readlines()
 
@@ -22,6 +27,9 @@ def initialise():
     return instructions
 
 def volume(cuboid):
+    #calculate the number of cubes contained in a cuboid
+    #cubes on the boundary of a cuboid count as contained within that cuboid
+
     ix, iy, iz = cuboid
 
     a = ix.upper - ix.lower + 1
@@ -32,10 +40,13 @@ def volume(cuboid):
 
 
 def intersect(cuboid1,cuboid2):
+    #calculate the cuboid of intersection between two cuboids
+    #return the cuboid of intersection, or False if the input cuboids do not intersect
+
     ix1,iy1,iz1 = cuboid1
     ix2, iy2, iz2 = cuboid2
 
-    ix = ix1 & ix2
+    ix = ix1 & ix2 #interval intersection
     iy = iy1 & iy2
     iz = iz1 & iz2
 
@@ -44,37 +55,35 @@ def intersect(cuboid1,cuboid2):
     
     return (ix,iy,iz)
 
-def new_cuboid(cuboids,newcuboid, onoff):
+def apply_one_instruction(cuboids,newcuboid, onoff):
+    #apply a single instruction
 
     new = cuboids.copy()
 
     if onoff == 'on':
-        new[newcuboid] += 1
+        new[newcuboid] = 1
 
-    for cuboid, count in cuboids.items():
+    for cuboid, sign in cuboids.items():
         overlap = intersect(newcuboid,cuboid)
         if overlap:
-            new[overlap] -= count
+            new[overlap] -= sign
 
     return new
 
 def apply_instructions(instructions):
+    #apply all the instructions in the input file
+    #return the total number of 'on' cubes after all instructions are applied
     cuboids = defaultdict(lambda: 0)
 
-    i=0
-
     for instruction in instructions:
-        i += 1
-        if i%50 == 0:
-            print(i, len(cuboids), min(cuboids.values()), max(cuboids.values()), sum(cuboids.values())/len(cuboids))
         onoff = instruction[0]
         newcuboid = instruction[1]
-        cuboids = new_cuboid(cuboids,newcuboid,onoff)
+        cuboids = apply_one_instruction(cuboids,newcuboid,onoff)
     
     total = 0
 
-    for cuboid, count in cuboids.items():
-        total += count*volume(cuboid)
+    for cuboid, sign in cuboids.items():
+        total += sign*volume(cuboid)
 
 
     return total

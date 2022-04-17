@@ -2,6 +2,9 @@ from itertools import permutations
 import sys
 
 def initialise():
+    #read the input file and set up
+    #scanners is a set of sets of beacon coordinates
+    #perms is the set of permutations of the indices (0,1,2)
 
     with open(sys.argv[1]) as file:
         data = file.readlines()
@@ -24,18 +27,17 @@ def initialise():
 
     perms = set(permutations((0,1,2)))
 
-    #odd_sigs = {(-1,1,1), (1,-1,1),(1,1,-1),(-1,-1,-1)}
-
-    #even_sigs = {(1,1,1), (-1,-1,1), (-1,1,-1), (1,-1,-1)}
-
     return scanners, perms
 
 def parity(perms):
+    #returns a dictionary from permutations of (0,1,2) to the set of signatures (axis inversion) such that the total operation is parity preserving
+    #for example, since the permutation (1,0,2) is odd, we must choose the odd signatures (-1,1,1), (1,-1,1),(1,1,-1) and (-1,-1,-1)}
+    # so correct_sigs[(1,0,2)] == {(-1,1,1), (1,-1,1),(1,1,-1),(-1,-1,-1)}
 
     correct_sigs = {}
 
     for perm in perms:
-        parity = sum(1 for (x,px) in enumerate(perm) for (y,py) in enumerate(perm) if x<y and px>py)%2
+        parity = sum(1 for (x,px) in enumerate(perm) for (y,py) in enumerate(perm) if x<y and px>py)%2  #calculate parity of the permutation
 
 
         if parity == 0:
@@ -51,6 +53,8 @@ scanners, perms = initialise()
 correct_sigs = parity(perms)
 
 def reorient(scanner,perm,sig):
+    #reorients a scanner using a particular permutation and signature
+    #returns the reoriented scanner (a new set of beacon coordinates)
     newscanner = set()
 
     for beacon in scanner:
@@ -60,6 +64,8 @@ def reorient(scanner,perm,sig):
     return newscanner
 
 def translate(scanner,offset):
+    #translates a scanner by a particular offset, where the offset is a tuple (dx,dy,dz) representing the translation vector
+    #returns the reoriented scanner (a new set of beacon coordinates)
     newscanner = set()
     dx,dy,dz = offset
 
@@ -71,6 +77,8 @@ def translate(scanner,offset):
     return newscanner
 
 def match12(scannerA, scannerB):
+    #Returns True if scannerA and scannerB have 12 or more beacon coordinates in common
+    #otherwise returns False
     common_points = scannerA.intersection(scannerB)
 
     if len(common_points) >= 12:
@@ -79,6 +87,11 @@ def match12(scannerA, scannerB):
     return False
 
 def compare(scannerA,scannerB):
+    #brute force to determine if two scanners match
+    #check every parity preserving orientation of scanner B (permutation + signature)
+    #and every translation (offset) of scanner B that brings a beacon from scanner B into alignment with a beacon from scanner A
+    #if a match is found, return the offset, permutation and signature that matches the two scanners
+    #return None if no match is found
     for perm in perms:
         for sig in correct_sigs[perm]:
             rotB = reorient(scannerB,perm,sig)
@@ -102,8 +115,12 @@ def compare(scannerA,scannerB):
 
 def part_two(scanners):
 
-    visited = [0]
+    #the "base scanner" is a set of coordinates of beacons from the point of view of scanner 0
+    #when a new scanner is correctly aligned and translated, its beacons are added to the "base scanner" set
     base_scanner = scanners[0]
+    #a list of scanners which have been incorporated into the "base scanner"
+    visited = [0]
+    #list of the offsets (translation vectors) of the other scanners from scanner 0's position
     offsets = []
 
     while len(visited) < len(scanners):
@@ -111,21 +128,20 @@ def part_two(scanners):
                 if i in visited:
                     continue
 
-                #print('checking', i)
-
                 result = compare(base_scanner, scanner)
             
                 if result:
-                    print('match!')
-                    print(i)
                     offset, perm, sig = result
                     offsets.append(offset)
+                    #reorient and translate the scanner into scanner 0's coordinate system
                     new_scanner = reorient(scanner,perm,sig)
                     new_scanner = translate(new_scanner,offset)
                     visited.append(i)
-                    base_scanner = base_scanner | new_scanner
-                    #print(len(base_scanner))
+                    print(len(visited))
+                    base_scanner = base_scanner | new_scanner #incorporate the scanner's beacons into the base scanner
     
+    #calculate the manhattan distance between every pair of scanners
+    #return the maximum manhattan distance (the puzzle solution)
     manhattans = []
     for off1 in offsets:
         for off2 in offsets:

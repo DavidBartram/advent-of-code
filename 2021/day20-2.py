@@ -4,10 +4,12 @@ from collections import defaultdict
 with open(sys.argv[1]) as file:
     data = file.readlines()
 
-algo = data[0].strip().replace('.','0').replace('#','1')
-image = [line.strip().replace('.','0').replace('#','1') for line in data[2:]]
+algo = data[0].strip().replace('.','0').replace('#','1') #algorithm string
+image = [line.strip().replace('.','0').replace('#','1') for line in data[2:]] #image grid as list of strings
 
 def update(point, image, algo, oob):
+    #calculate the new value of a pixel based on its neighbours
+    #and the algorithm
 
     xmax = len(image[0])-1
     ymax = len(image)-1
@@ -21,9 +23,11 @@ def update(point, image, algo, oob):
         (dx,dy) = step
         
         if 0 <= x+dx <= xmax and 0 <= y+dy <= ymax:
+            #if in the bounds of the grid, return the value
             idx += image[y+dy][x+dx]
         
         else:
+            #if out of bounds, return current value of oob
             idx += oob
     
     idx = int(idx,2)
@@ -32,6 +36,8 @@ def update(point, image, algo, oob):
 
 
 def apply_algo(image,algo, oob):
+    #apply the enhancement algorithm once to the image grid
+    #return the new image grid
     
     image2 = []
 
@@ -47,23 +53,22 @@ def apply_algo(image,algo, oob):
     
     return image2
 
-    
-    
-
-    
-    
-    return image2
-
 def print_image(image):
+    #helper function to print image
+    #only used for debugging
     for row in image:
         print(row)
 
 def part_one(image,algo,n):
+    #apply the enhancement algorithm n times to the initial image grid
 
     oob = '0'
 
     for _ in range(n):
+        #apply the enhancement algorithm
         image = apply_algo(image,algo,oob)
+
+        #update the value of oob
         if algo[0]=='1' and algo[-1]=='0' and oob == '0':
             oob = '1'
         elif algo[0]=='1' and algo[-1]=='0' and oob == '1':
@@ -79,4 +84,3 @@ def part_one(image,algo,n):
 
 pix_sum, img = part_one(image,algo,50)
 print(pix_sum)
-#print_image(img)
