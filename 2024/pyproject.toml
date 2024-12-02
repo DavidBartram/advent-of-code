@@ -1,0 +1,8 @@
+[tool.poetry]
+description = "Python environment for Advent of Code 2024"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pyyaml = "^6.0"
+deepdiff = "^6.3.0"
