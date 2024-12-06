@@ -12,7 +12,7 @@ def read_input_file(file_path):
 def sum_instructions(input):
     pattern = re.compile("mul\((\d+),(\d+)\)|(do\(\))|(don't\(\))")
 
-    #output of pattern.findall(input) will look like this because of the capture groups:
+    # output of pattern.findall(input) will look like this because of the capture groups:
     # [('2', '4', '', ''), ('', '', '', "don't()"), ('5', '5', '', ''), ('11', '8', '', ''), ('', '', 'do()', ''), ('8', '5', '', '')
 
     do = True
@@ -21,13 +21,14 @@ def sum_instructions(input):
     for result in pattern.findall(input):
         if result[0] != "" and result[1] != "":
             if do:
-                sum += (int(result[0]) * int(result[1]))
+                sum += int(result[0]) * int(result[1])
         elif result[2] == "do()":
             do = True
         elif result[3] == "don't()":
             do = False
 
     return sum
+
 
 def main():
     repo_root = os.popen("git rev-parse --show-toplevel").read().strip()

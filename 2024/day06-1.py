@@ -10,7 +10,7 @@ def read_input_file(file_path):
     return input
 
 
-directions = {"N":(0, -1), "E":(1, 0), "S": (0, 1), "W": (-1, 0)}
+directions = {"N": (0, -1), "E": (1, 0), "S": (0, 1), "W": (-1, 0)}
 
 turn_right = {"N": "E", "E": "S", "S": "W", "W": "N"}
 
@@ -21,7 +21,7 @@ def is_in_bounds(pos, grid):
 
 def one_step(pos, direction, grid):
     new_pos = (pos[0] + directions[direction][0], pos[1] + directions[direction][1])
-    
+
     if not is_in_bounds(new_pos, grid):
         return new_pos, direction
     if grid[new_pos[1]][new_pos[0]] != "#":
@@ -32,15 +32,17 @@ def one_step(pos, direction, grid):
         # print(f"Visited so far: {visited}")
         # print(f"Visited so far length: {len(visited)}")
         # print("\n\n")
-        #if we assume the point is never fully surrounded by obstacles
-        #then this will eventually return a new position and direction
-        return one_step(pos, turn_right[direction],grid)
+        # if we assume the point is never fully surrounded by obstacles
+        # then this will eventually return a new position and direction
+        return one_step(pos, turn_right[direction], grid)
+
 
 def get_start_pos(grid):
     for y in range(len(grid)):
         for x in range(len(grid[0])):
             if grid[y][x] == "^":
                 return (x, y)
+
 
 def simulate(grid):
     pos = get_start_pos(grid)
@@ -52,8 +54,9 @@ def simulate(grid):
             pos, direction = one_step(pos, direction, grid)
         else:
             break
-        
+
     return visited
+
 
 def main():
     repo_root = os.popen("git rev-parse --show-toplevel").read().strip()

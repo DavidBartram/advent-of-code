@@ -37,6 +37,7 @@ def is_correctly_ordered(update, rules_dict):
 
     return True
 
+
 def find_middle_odd(list):
     assert len(list) % 2 == 1
     middle_index = len(list) // 2
@@ -50,13 +51,13 @@ def sum_middles(updates, rules_dict):
             sum += int(find_middle_odd(update))
     return sum
 
+
 def main():
     repo_root = os.popen("git rev-parse --show-toplevel").read().strip()
     file_path = os.path.join(repo_root, "2024/input/input05-1")
     rules, updates = read_input_file(file_path)
 
     rules_dict = rules_to_dict(rules)
-
 
     print(sum_middles(updates, rules_dict))
 

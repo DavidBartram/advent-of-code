@@ -88,7 +88,9 @@ def main():
     obstacle_positions.remove(start_pos)
 
     with Pool(cpu_count()) as pool:
-        results = pool.map(check_loop, [(grid, start_pos, pos) for pos in obstacle_positions])
+        results = pool.map(
+            check_loop, [(grid, start_pos, pos) for pos in obstacle_positions]
+        )
 
     loop_positions = sum(results)
 

@@ -1,5 +1,5 @@
-days = range(1,26)
-parts = ["1","2"]
+days = range(1, 26)
+parts = ["1", "2"]
 
 for day in days:
     for part in parts:

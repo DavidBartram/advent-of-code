@@ -26,7 +26,7 @@ def problem_dampener(row):
 
     if is_row_safe(row):
         return True
-    
+
     for i, _ in enumerate(row):
         row_without_value = deepcopy(row)
         row_without_value.pop(i)

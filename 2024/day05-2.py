@@ -1,6 +1,7 @@
 import os
 from copy import deepcopy
 
+
 def read_input_file(file_path):
     with open(file_path, "r") as file:
         input = file.read()
@@ -32,40 +33,43 @@ def is_correctly_ordered(update, rules_dict):
         else:
             previous_pages = update[:i]
             if any(value in rules_dict[page] for value in previous_pages):
-                return False,i
+                return False, i
 
-    return True,None
+    return True, None
+
 
 def find_middle_odd(list):
     assert len(list) % 2 == 1
     middle_index = len(list) // 2
     return list[middle_index]
 
-def reposition_element(update, rules_dict,i):
+
+def reposition_element(update, rules_dict, i):
     previous_pages = update[:i]
     new_pos = None
 
-    for j,prev_page in enumerate(previous_pages):
+    for j, prev_page in enumerate(previous_pages):
         if prev_page in rules_dict[update[i]]:
             new_pos = j
             break
-    
+
     update_copy = deepcopy(update)
-    
+
     update_copy.insert(new_pos, update_copy.pop(i))
 
     return update_copy
 
 
-def reposition_all_elements(update, rules_dict): 
+def reposition_all_elements(update, rules_dict):
     is_ordered, first_violation = is_correctly_ordered(update, rules_dict)
 
     if is_ordered:
         return update
-    
+
     else:
         new_update = reposition_element(update, rules_dict, first_violation)
         return reposition_all_elements(new_update, rules_dict)
+
 
 def sum_middles(updates, rules_dict):
 

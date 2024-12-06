@@ -9,8 +9,9 @@ def read_input_file(file_path):
 
     return input
 
-#only diagonal directions are relevant
-#check_direction handles the opposite direction
+
+# only diagonal directions are relevant
+# check_direction handles the opposite direction
 # so only need one dir on each diagonal axis
 directions = {(1, 1), (1, -1)}
 
