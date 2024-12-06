@@ -39,16 +39,16 @@ def get_start_pos(grid):
                 return (x, y)
 
 
-def has_loop(grid, start_pos, new_obstacle):
-    pos = start_pos
+def has_loop(grid, start_posdir, new_obstacle):
+    pos = start_posdir[0]
+    direction = start_posdir[1]
+    visited = set()
     new_grid = deepcopy(grid)
     new_grid[new_obstacle[1]] = (
         new_grid[new_obstacle[1]][: new_obstacle[0]]
         + "#"
         + new_grid[new_obstacle[1]][new_obstacle[0] + 1 :]
     )
-    visited = set()
-    direction = "N"
     while True:
         if is_in_bounds(pos, new_grid):
             if (pos, direction) in visited:
@@ -59,13 +59,13 @@ def has_loop(grid, start_pos, new_obstacle):
             return False
 
 
-def initial_path(start_pos, grid):
-    pos = start_pos
-    visited = set()
-    direction = "N"
+def initial_path(start_posdir, grid):
+    pos = start_posdir[0]
+    direction = start_posdir[1]
+    visited = []
     while True:
         if is_in_bounds(pos, grid):
-            visited.add(pos)
+            visited.append((pos,direction))
             pos, direction = step_or_turn(pos, direction, grid)
         else:
             break
@@ -83,13 +83,34 @@ def main():
     file_path = os.path.join(repo_root, "2024/input/input06-2")
     grid = read_input_file(file_path)
 
-    start_pos = get_start_pos(grid)
-    obstacle_positions = initial_path(start_pos, grid)
-    obstacle_positions.remove(start_pos)
+    start_posdir = (get_start_pos(grid), "N")
+
+    # Get the initial path with no new obstacle
+    # these are the only points we will need to
+    # try adding new obstacles to
+    initial_path_list = initial_path(start_posdir, grid)
+    
+    obstacle_pos_and_start_posdirs = []
+
+    for i,(pos, dir) in enumerate(initial_path_list):
+        if i == 0:
+            continue
+
+        # We only need need to include unique positions for obstacles
+        # obstacles do not care about direction
+        if pos not in [pos for pos,_ in obstacle_pos_and_start_posdirs]:
+            # When we place a new obstacle, we can start the new simulation from the
+            # position and direction immedately before the obstacle
+            # NOTE: We do not need to add the previously visited elements from the initial path
+            # if we have a loop, then it will inevitably repeat starting from the position before the obstacle
+            # I experimented with taking into account a set of the elements before the obstacle, but it slowed down the process
+            new_element = (pos,initial_path_list[i-1])
+            obstacle_pos_and_start_posdirs.append(new_element)
+
 
     with Pool(cpu_count()) as pool:
         results = pool.map(
-            check_loop, [(grid, start_pos, pos) for pos in obstacle_positions]
+            check_loop, [(grid, new_start_pos, obstacle_pos) for (obstacle_pos,new_start_pos) in obstacle_pos_and_start_posdirs]
         )
 
     loop_positions = sum(results)
