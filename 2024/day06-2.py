@@ -65,7 +65,7 @@ def initial_path(start_posdir, grid):
     visited = []
     while True:
         if is_in_bounds(pos, grid):
-            visited.append((pos,direction))
+            visited.append((pos, direction))
             pos, direction = step_or_turn(pos, direction, grid)
         else:
             break
@@ -89,28 +89,31 @@ def main():
     # these are the only points we will need to
     # try adding new obstacles to
     initial_path_list = initial_path(start_posdir, grid)
-    
+
     obstacle_pos_and_start_posdirs = []
 
-    for i,(pos, dir) in enumerate(initial_path_list):
+    for i, (pos, dir) in enumerate(initial_path_list):
         if i == 0:
             continue
 
         # We only need need to include unique positions for obstacles
         # obstacles do not care about direction
-        if pos not in [pos for pos,_ in obstacle_pos_and_start_posdirs]:
+        if pos not in [pos for pos, _ in obstacle_pos_and_start_posdirs]:
             # When we place a new obstacle, we can start the new simulation from the
             # position and direction immedately before the obstacle
             # NOTE: We do not need to add the previously visited elements from the initial path
             # if we have a loop, then it will inevitably repeat starting from the position before the obstacle
             # I experimented with taking into account a set of the elements before the obstacle, but it slowed down the process
-            new_element = (pos,initial_path_list[i-1])
+            new_element = (pos, initial_path_list[i - 1])
             obstacle_pos_and_start_posdirs.append(new_element)
-
 
     with Pool(cpu_count()) as pool:
         results = pool.map(
-            check_loop, [(grid, new_start_pos, obstacle_pos) for (obstacle_pos,new_start_pos) in obstacle_pos_and_start_posdirs]
+            check_loop,
+            [
+                (grid, new_start_pos, obstacle_pos)
+                for (obstacle_pos, new_start_pos) in obstacle_pos_and_start_posdirs
+            ],
         )
 
     loop_positions = sum(results)
