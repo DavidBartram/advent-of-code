@@ -48,12 +48,7 @@ def move_files(files, gaps):
 
     files.reverse()
 
-    target = len(files)
-
-    for i, file in enumerate(files):
-        if (target - i) % 1000 == 0:
-            print(target - i)
-
+    for file in files:
         move_file(gaps, file)
 
     return None
