@@ -1,4 +1,3 @@
-import numpy as np
 import os
 import re
 
@@ -22,17 +21,37 @@ def read_input_file(file_path):
 
         buttonA = (int(buttonA_match.group(2)), int(buttonA_match.group(3)))
         buttonB = (int(buttonB_match.group(2)), int(buttonB_match.group(3)))
-        prize = (
-            int(prize_match.group(1)) + 10000000000000,
-            int(prize_match.group(2)) + 10000000000000,
-        )
+        prize = (int(prize_match.group(1)), int(prize_match.group(2)))
 
-        prize_array = np.array(prize)
-        matrix = np.array([[buttonA[0], buttonB[0]], [buttonA[1], buttonB[1]]])
-
-        problems.append((matrix, prize_array))
+        problems.append((buttonA, buttonB, prize))
 
     return problems
+
+
+def solve_problem_integer(buttonA, buttonB, prize):
+    a0, a1 = buttonA
+    b0, b1 = buttonB
+    p0, p1 = prize
+
+    det = a0 * b1 - a1 * b0
+
+    if det == 0:
+        return None
+
+    x = p0 * b1 - p1 * b0 #must be an integer as all coefficients are integers
+    y = p1 * a0 - p0 * a1 #must be an integer as all coefficients are integers
+
+    for w in (x, y):
+        if w % det != 0: #if the remainder is not 0, then the solution is not an integer
+            return None
+
+    x = x // det
+    y = y // det
+
+    if not (0 <= x <= 100 and 0 <= y <= 100): #negative solutions are not valid, for part 1 solutions >100 are not valid
+        return None
+
+    return 3 * x + y
 
 
 def main():
@@ -42,26 +61,14 @@ def main():
 
     cost = 0
     for problem in problems:
-        matrix = problem[0]
-        prize = problem[1]
+        buttonA, buttonB, prize = problem
 
-        if np.linalg.det(matrix) == 0:
-            continue
-
-        inverse_matrix = np.linalg.inv(matrix)
-
-        solution = np.dot(inverse_matrix, prize)
-
-        # hacky way to check for integer solution
-        # round it and then check if the solution works
-        # not guaranteed to be resilient to floating point errors
-        solution = np.round(solution)
-        if not np.array_equal(np.dot(matrix, solution), prize):
-            continue
-
-        cost += int(3 * solution[0] + solution[1])
+        solution = solve_problem_integer(buttonA, buttonB, prize)
+        if solution:
+            cost += solution
 
     print(cost)
+
 
 if __name__ == "__main__":
     main()
