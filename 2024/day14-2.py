@@ -66,14 +66,16 @@ def count_neighbours(pos, counts):
             nbs += 1
     return nbs
 
+
 def render(counts):
     for y in range(HEIGHT):
         for x in range(WIDTH):
             if (x, y) in counts:
-                print(counts[(x,y)], end="")
+                print(counts[(x, y)], end="")
             else:
                 print(".", end="")
         print()
+
 
 def main():
     repo_root = os.popen("git rev-parse --show-toplevel").read().strip()
@@ -81,7 +83,7 @@ def main():
     robots = read_input_file(file_path)
 
     neighbour_scores = []
-    for i in range(0, HEIGHT*WIDTH):
+    for i in range(0, HEIGHT * WIDTH):
         steps = i
         final_counts = {}
         for robot in robots:
@@ -99,7 +101,7 @@ def main():
 
         neighbour_scores.append(neighbour_score)
 
-        if neighbour_scores[-1] > 5*sum(neighbour_scores)/len(neighbour_scores):
+        if neighbour_scores[-1] > 5 * sum(neighbour_scores) / len(neighbour_scores):
             print(i, neighbour_score)
             render(final_counts)
 

@@ -50,8 +50,10 @@ def apply_instructions(start, instructions, grid):
             if grid[y2][x2] == "#":
                 continue
             if grid[y2][x2] == ".":
-                move(block_start, (x2, y2), grid) #moving the start of the block of Os past the end is the same as moving the block
-                move(robot_pos, block_start, grid) #still need to move the robot
+                move(
+                    block_start, (x2, y2), grid
+                )  # moving the start of the block of Os past the end is the same as moving the block
+                move(robot_pos, block_start, grid)  # still need to move the robot
             robot_pos = robot_pos[0] + dir[0], robot_pos[1] + dir[1]
 
 

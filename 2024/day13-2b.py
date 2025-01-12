@@ -41,7 +41,7 @@ def solve_problem_integer(buttonA, buttonB, prize):
     if det == 0:
         return None
 
-    x = p0 * b1 - p1 * b0 #
+    x = p0 * b1 - p1 * b0  #
     y = p1 * a0 - p0 * a1
 
     for w in (x, y):

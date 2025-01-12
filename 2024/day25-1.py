@@ -1,5 +1,6 @@
 import os
 
+
 def read_input_file(file_path):
     with open(file_path, "r") as file:
         input = file.read()
@@ -9,7 +10,7 @@ def read_input_file(file_path):
     keys = []
     locks = []
     lock = None
-    
+
     for block in blocks:
         if block.startswith("#####"):
             rows = block.split("\n")[1:]
@@ -17,7 +18,7 @@ def read_input_file(file_path):
         else:
             rows = block.split("\n")[:-1]
             lock = False
-        
+
         counts = {}
 
         for i in range(len(rows)):
@@ -30,16 +31,13 @@ def read_input_file(file_path):
                 if val == "#":
                     if i in counts:
                         counts[i] += 1
-        
+
         if lock:
             locks.append([counts[i] for i in sorted(counts.keys())])
         else:
             keys.append([counts[i] for i in sorted(counts.keys())])
 
-    return locks,keys, available_space
-
-
-
+    return locks, keys, available_space
 
 
 def main():
@@ -50,8 +48,8 @@ def main():
 
     for lock in locks:
         for key in keys:
-            if all([sum(x)<=available_space for x in zip(lock, key)]):
-                score += 1    
+            if all([sum(x) <= available_space for x in zip(lock, key)]):
+                score += 1
     print(score)
 
 

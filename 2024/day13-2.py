@@ -63,5 +63,6 @@ def main():
 
     print(cost)
 
+
 if __name__ == "__main__":
     main()

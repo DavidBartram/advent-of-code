@@ -26,7 +26,7 @@ def is_in_bounds(x, y, grid):
 
 def get_plant(x, y, grid):
     if not is_in_bounds(x, y, grid):
-        
+
         return None
     else:
         return grid[y][x]

@@ -38,17 +38,21 @@ def solve_problem_integer(buttonA, buttonB, prize):
     if det == 0:
         return None
 
-    x = p0 * b1 - p1 * b0 #must be an integer as all coefficients are integers
-    y = p1 * a0 - p0 * a1 #must be an integer as all coefficients are integers
+    x = p0 * b1 - p1 * b0  # must be an integer as all coefficients are integers
+    y = p1 * a0 - p0 * a1  # must be an integer as all coefficients are integers
 
     for w in (x, y):
-        if w % det != 0: #if the remainder is not 0, then the solution is not an integer
+        if (
+            w % det != 0
+        ):  # if the remainder is not 0, then the solution is not an integer
             return None
 
     x = x // det
     y = y // det
 
-    if not (0 <= x <= 100 and 0 <= y <= 100): #negative solutions are not valid, for part 1 solutions >100 are not valid
+    if not (
+        0 <= x <= 100 and 0 <= y <= 100
+    ):  # negative solutions are not valid, for part 1 solutions >100 are not valid
         return None
 
     return 3 * x + y
