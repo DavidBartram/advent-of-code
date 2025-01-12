@@ -1,4 +1,6 @@
 import os
+from collections import deque
+from copy import deepcopy
 
 
 def read_input_file(file_path):
@@ -26,11 +28,92 @@ def read_input_file(file_path):
 instruction_to_direction = {"^": (0, -1), ">": (1, 0), "v": (0, 1), "<": (-1, 0)}
 
 
-def move(current, new_pos, grid):
-    x, y = current
-    x2, y2 = new_pos
-    grid[y2][x2] = grid[y][x]
-    grid[y][x] = "."
+def affected_positions_horizontal(x, y, dir, grid):
+    # find the set of points affected by
+    # the horizontal movement of a [ or ] at (x,y)
+    visited = set()
+    visited.add((x, y))
+
+    # step in the direction of motion
+    x, y = x + dir[0], y + dir[1]
+
+    if grid[y][x] in {"[", "]"}:
+        # We've hit another box part, so add it to affected positions
+        visited.add((x, y))
+    if grid[y][x] == "#":
+        # We've hit a wall in the direction of motion
+        # no positions will move
+        return None
+    if grid[y][x] == ".":
+        # We've reached the end of a row of boxes
+        # no more positions will be affected
+        return visited
+
+
+def get_partner(x, y, char):
+    if char == "[":
+        return (x + 1, y)
+    if char == "]":
+        return (x - 1, y)
+    else:
+        raise Exception("bad input for partner function")
+
+
+def affected_positions_vertical(x, y, dir, grid):
+    # use BFS to find the set of points affected by
+    # the vertical movement of a [ or ] at (x,y)
+
+    # This is a nice example, all the [ and ] in this need to move up
+    # if the next instruction is ^
+
+    # ##........##
+    # ##.....[].##
+    # ##.[].[]..##
+    # ##..[][]..##
+    # ##...[]...##
+    # ##....@...##
+
+    visited = set()
+    q = deque()
+    q.append((x, y))
+    while q:
+        pos = q.popleft()
+        visited.add(pos)
+
+        # Ensure the "other half" of any affected box gets added to the queue
+        # e.g. if a ] moves, then the [ to the left of it also needs to move
+        char = grid[pos[1]][pos[0]]
+        partner = get_partner(pos[0], pos[1], char)
+        if partner not in visited:
+            q.append(partner)
+
+        # step in the direction of motion
+        x2, y2 = pos[0] + dir[0], pos[1] + dir[1]
+        char2 = grid[y2][x2]
+
+        if char2 in {"[", "]"}:
+            # we've hit part of another box, so we need to add its position to the queue
+            if (x2, y2) not in visited:
+                q.append((x2, y2))
+        elif char2 == "#":
+            # we've hit a wall in the direction of motion
+            # so nothing will move
+            return None
+    return visited
+
+
+def move_set(positions, dir, grid):
+    original = dict()
+
+    for x, y in positions:
+        # clear all the positions
+        # storing the original char for each pos in a dict
+        original[(x, y)] = grid[y][x]
+        grid[y][x] = "."
+
+    for x, y in positions:
+        # write the original chars in their new position in the grid
+        grid[y + dir[1]][x + dir[0]] = original[(x, y)]
 
 
 def apply_instructions(start, instructions, grid):
@@ -49,21 +132,21 @@ def apply_instructions(start, instructions, grid):
             continue
 
         if grid[y2][x2] == ".":
-            move(robot_pos, (x2, y2), grid)
+            robot_set = set()
+            robot_set.add(robot_pos)
+            move_set(robot_set, dir, grid)
             robot_pos = robot_pos[0] + dir[0], robot_pos[1] + dir[1]
 
-        if grid[y2][x2] == "O":
-            block_start = (x2, y2)
-            while grid[y2][x2] == "O":
-                x2, y2 = x2 + dir[0], y2 + dir[1]
-            if grid[y2][x2] == "#":
-                continue
-            if grid[y2][x2] == ".":
-                move(
-                    block_start, (x2, y2), grid
-                )  # moving the start of the block of Os past the end is the same as moving the block
-                move(robot_pos, block_start, grid)  # still need to move the robot
-            robot_pos = robot_pos[0] + dir[0], robot_pos[1] + dir[1]
+        if grid[y2][x2] in {"[", "]"}:
+            if dir in {(1, 0), (-1, 0)}:
+                affected_set = affected_positions_horizontal(x2, y2, dir, grid)
+            else:
+                affected_set = affected_positions_vertical(x2, y2, dir, grid)
+
+            if affected_set:
+                affected_set.add(robot_pos)
+                move_set(affected_set, dir, grid)
+                robot_pos = robot_pos[0] + dir[0], robot_pos[1] + dir[1]
 
 
 def render(grid):
@@ -84,7 +167,7 @@ def score_grid(grid):
     score = 0
     for y in range(len(grid)):
         for x in range(len(grid[0])):
-            if grid[y][x] == "O":
+            if grid[y][x] == "[":
                 score += 100 * y + x
     return score
 
@@ -96,6 +179,8 @@ def main():
     start = get_robot_start(grid)
 
     apply_instructions(start, instructions, grid)
+
+    # render(grid)
 
     print(score_grid(grid))
 
