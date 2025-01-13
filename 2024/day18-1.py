@@ -26,7 +26,9 @@ def read_input_file(file_path):
 
     return grid
 
+
 dirs = {"N": (0, -1), "E": (1, 0), "S": (0, 1), "W": (-1, 0)}
+
 
 def get_neighbours(point, grid):
     nbs = set()
@@ -69,7 +71,7 @@ def main():
     grid = read_input_file(file_path)
 
     start = (0, 0)
-    end = (WIDTH-1, HEIGHT-1)
+    end = (WIDTH - 1, HEIGHT - 1)
 
     q = PriorityQueue()
     q.put((0, start))

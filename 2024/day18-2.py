@@ -1,6 +1,5 @@
 import os
-from queue import PriorityQueue
-from collections import defaultdict
+from collections import deque, defaultdict
 
 WIDTH = 71
 HEIGHT = 71
@@ -10,53 +9,51 @@ def read_input_file(file_path):
     with open(file_path, "r") as file:
         lines = file.readlines()
 
-    grid = defaultdict(lambda: "#")
+    grid = defaultdict(lambda: -1)
 
     for i in range(WIDTH):
         for j in range(HEIGHT):
-            grid[(i, j)] = "."
+            grid[(i, j)] = float("inf")
+
+    for t, line in enumerate(lines):
+        splitline = line.strip().split(",")
+        x, y = splitline[0], splitline[1]
+        grid[(int(x), int(y))] = t
 
     return lines, grid
 
+
 dirs = {"N": (0, -1), "E": (1, 0), "S": (0, 1), "W": (-1, 0)}
 
-def get_neighbours(point, grid):
+
+def get_neighbours(point, grid, t):
     nbs = set()
     (x, y) = point
 
     for dir in dirs:
         dx, dy = dirs[dir]
-
-        if grid[(x + dx, y + dy)] != "#":
+        value = grid[(x + dx, y + dy)]
+        result = t < grid[(x + dx, y + dy)]
+        if result:
             nbs.add((x + dx, y + dy))
 
     return nbs
 
 
-def dijkstra(grid, q, end):
-    costs = {}
-    while not q.empty():
-        (d, point) = q.get()
-        nbs = get_neighbours(point, grid)
+def get_reachable(grid, q: deque, end, t):
+    visited = set()
+    while not len(q) == 0:
+        point = q.popleft()
+        nbs = get_neighbours(point, grid, t)
         for nb in nbs:
-            if d + 1 < costs.get(nb, float("inf")):
-                costs[nb] = d + 1
-                q.put((costs[nb], nb))
+            if nb not in visited:
+                q.append(nb)
+                visited.add(nb)
 
-    if end not in costs:
-        return True
+    if end not in visited:
+        return visited, True
 
-    return False
-    
-
-
-def render(grid):
-    for j in range(HEIGHT):
-        for i in range(WIDTH):
-            print(grid[(i, j)], end="")
-        print("\n")
-
-    print("\n")
+    return visited, False
 
 
 def main():
@@ -65,23 +62,34 @@ def main():
     lines, grid = read_input_file(file_path)
 
     start = (0, 0)
-    end = (WIDTH-1, HEIGHT-1)
+    end = (WIDTH - 1, HEIGHT - 1)
 
-    for i,line in enumerate(lines):
-        splitline = line.strip().split(",")
-        x, y = splitline[0], splitline[1]
-        grid[(int(x), int(y))] = "#"
-        q = PriorityQueue()
-        q.put((0, start))
-        result = dijkstra(grid, q, end)
+    reachable = set()
+    for j in range(HEIGHT):
+        for i in range(WIDTH):
+            reachable.add((i, j))
 
-        if i%100 == 0:
-            print(i)
-        if result:
-            render(grid)
-            print(line)
-            break
-        
+    low, high = 0, len(lines) - 1
+    result_t = -1
+
+    while low <= high:
+        mid = (low + high) // 2
+        q = deque()
+        q.append(start)
+
+        reachable, finished = get_reachable(grid, q, end, mid)
+
+        if finished:
+            result_t = mid
+            high = mid - 1
+        else:
+            low = mid + 1
+
+    if result_t != -1:
+        print(lines[result_t])
+    else:
+        print("No solution found")
+
 
 if __name__ == "__main__":
     main()
