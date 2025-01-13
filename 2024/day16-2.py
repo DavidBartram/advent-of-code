@@ -57,7 +57,7 @@ def backtrack(parents, start, end):
 
     current = end
     visited = set()
-    
+
     visited.add(current)
     current_parents = parents[current]
 
@@ -65,9 +65,8 @@ def backtrack(parents, start, end):
         return visited
 
     for parent in parents[current]:
-        new_visited = backtrack(parents, start, parent)
-        visited = visited.union(new_visited)
-    
+        visited = visited.union(backtrack(parents, start, parent))
+
     return visited
 
 

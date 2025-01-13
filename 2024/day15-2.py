@@ -34,20 +34,19 @@ def affected_positions_horizontal(x, y, dir, grid):
     visited = set()
     visited.add((x, y))
 
-    # step in the direction of motion
-    x, y = x + dir[0], y + dir[1]
+    while grid[y][x] != ".":
+        # step in the direction of motion
+        x, y = x + dir[0], y + dir[1]
 
-    if grid[y][x] in {"[", "]"}:
-        # We've hit another box part, so add it to affected positions
-        visited.add((x, y))
-    if grid[y][x] == "#":
-        # We've hit a wall in the direction of motion
-        # no positions will move
-        return None
-    if grid[y][x] == ".":
-        # We've reached the end of a row of boxes
-        # no more positions will be affected
-        return visited
+        if grid[y][x] in {"[", "]"}:
+            # We've hit another box part, so add it to affected positions
+            visited.add((x, y))
+        if grid[y][x] == "#":
+            # We've hit a wall in the direction of motion
+            # no positions will move
+            return None
+
+    return visited
 
 
 def get_partner(x, y, char):
@@ -179,8 +178,6 @@ def main():
     start = get_robot_start(grid)
 
     apply_instructions(start, instructions, grid)
-
-    # render(grid)
 
     print(score_grid(grid))
 

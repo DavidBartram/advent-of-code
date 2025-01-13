@@ -52,6 +52,7 @@ def get_neighbours(point, grid):
 
     return nbs
 
+
 def dijkstra(grid, q, end):
     costs = {}
     while not q.empty():
