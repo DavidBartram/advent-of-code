@@ -3,7 +3,7 @@ from collections import deque
 
 registers = {"A": 34615120, "B": 0, "C": 0}
 
-instructions = [2,4,1,5,7,5,1,6,0,3,4,3,5,5,3,0]
+instructions = [2, 4, 1, 5, 7, 5, 1, 6, 0, 3, 4, 3, 5, 5, 3, 0]
 
 
 def get_combo_operand(operand, registers):
