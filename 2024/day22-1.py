@@ -1,5 +1,4 @@
 import os
-from functools import cache
 
 
 def read_input_file(file_path):
